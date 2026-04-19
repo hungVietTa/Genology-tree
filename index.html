@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Genealogy Tree (Final)</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      text-align: center;
+      background: #f5f7fb;
+    }
+
+    /* container */
+    #tree-container {
+      position: relative;
+      display: inline-block;
+      padding: 20px;
+    }
+
+    /* NODE CARD */
+    .node {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      /* 👇 ADD THESE */
+      flex: 0 0 auto;
+      /* prevent shrinking */
+      width: auto;
+      /* fit content */
+      white-space: nowrap;
+      /* keep text in one line */
+
+      padding: 8px 14px;
+      border-radius: 10px;
+      margin: 12px;
+
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      flex: 0 0 auto;
+      /* important */
+      white-space: nowrap;
+
+      /* 👇 ADD THIS */
+      min-width: max-content;
+      /* lock width to content */
+    }
+
+    /* hover effect */
+    .node:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    /* NAME TEXT */
+    .node span:last-child {
+      font-weight: 500;
+      color: #333;
+    }
+
+    /* TOGGLE BUTTON */
+    .toggle {
+      width: 18px;
+      height: 18px;
+      line-height: 16px;
+      text-align: center;
+
+      border-radius: 50%;
+      border: none;
+
+      background: #4a90e2;
+      color: white;
+
+      font-size: 13px;
+      font-weight: bold;
+
+      cursor: pointer;
+      user-select: none;
+
+      transition: all 0.2s ease;
+    }
+
+    /* toggle hover */
+    .toggle:hover {
+      background: #357abd;
+      transform: scale(1.1);
+    }
+
+    /* CHILDREN LAYOUT */
+    .children {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+
+      gap: 60px;
+      margin-top: 40px;
+
+      /* 👇 ADD THIS */
+      flex-wrap: nowrap;
+      /* prevent reflow */
+    }
+
+    /* hidden */
+    .hidden {
+      display: none;
+    }
+
+    /* SVG lines */
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    line {
+      stroke: #b0b8c1;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Genealogy Tree</h2>
+
+  <div id="tree-container">
+    <svg id="lines"></svg>
+    <div id="tree"></div>
+  </div>
+
+  <script>
+    /* =========================
+       1. DATA (EDIT HERE)
+       ========================= */
+
+    const familyTree = {
+      name: "Cụ Phạm Văn Biện",
+      children: [
+        {
+          name: "Cụ Phạm Văn Phượng",
+          children: [
+            { name: "Phạm Văn Vân", children: [] },
+            {
+              name: "Phạm Văn Hiền", children: [
+                {
+                  name: "Phạm Văn Tấn", children: [
+                    {
+                      name: "Phạm Văn Chung",
+                      children: [
+                        { name: "Phạm Thị Cầu", children: [] },
+                        { name: "Phạm Văn Ước", children: [] },
+                        { name: "Phạm Văn Hệ", children: [] },
+                        { name: "Phạm Văn Tuệ", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Văn Ngân",
+                      children: [
+                        { name: "Phạm Văn Thoàn", children: [] },
+                        { name: "Phạm Thị Nhờ", children: [] },
+                        { name: "Phạm Văn Ngấn", children: [] },
+                        { name: "Phạm Văn Nhận", children: [] },
+                        { name: "Phạm Thị Thắm", children: [] },
+                        { name: "Phạm Văn Định", children: [] },
+                        { name: "Phạm Văn Tỉnh", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Văn Khanh",
+                      children: [
+                        { name: "Phạm Văn Khang", children: [] },
+                        { name: "Phạm Văn Cường", children: [] },
+                        { name: "Phạm Thị Nhuần", children: [] },
+                        { name: "Phạm Văn Trường", children: [] },
+                        { name: "Phạm Văn Trình", children: [] },
+                        { name: "Phạm Thị Chăm", children: [] },
+                        { name: "Phạm Thị Chút", children: [] },
+                        { name: "Phạm Văn Chiến", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Thị Sủi",
+                      children: [
+                        { name: "Phạm Thị Son", children: [] },
+                        { name: "Phạm Văn Nâu", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Văn Đào",
+                      children: [
+                        { name: "Phạm Thị Mận", children: [] },
+                        { name: "Phạm Thị Dung", children: [] },
+                        { name: "Phạm Văn Tuấn", children: [] },
+                        { name: "Phạm Thị Tú", children: [] },
+                        { name: "Phạm Thị Hợi", children: [] },
+                        { name: "Phạm Thị Thơm", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Văn Tẽo (mất sớm)",
+                      children: []
+                    },
+                    {
+                      name: "Phạm Thị Mừng",
+                      children: [
+                        { name: "Phạm Văn Nhuận", children: [] },
+                        { name: "Phạm Văn Lưu", children: [] },
+                        { name: "Phạm Thị Nhuần", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Thị Vui",
+                      children: [
+                        { name: "Phạm Thị Ngoan", children: [] },
+                        { name: "Phạm Thị Thanh", children: [] },
+                        { name: "Phạm Thị Thoảng", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Văn Đoàn",
+                      children: [
+                        { name: "Phạm Thị Sen", children: [] },
+                        { name: "Phạm Văn Đảng", children: [] },
+                        { name: "Phạm Công Đang", children: [] },
+                        { name: "Phạm Công Đĩnh", children: [] },
+                        { name: "Phạm Thị Lan", children: [] },
+                        { name: "Phạm Công Đỉnh", children: [] },
+                      ]
+                    },
+                    {
+                      name: "Phạm Thị Vẻ",
+                      children: [
+                        { name: "Phạm Văn Dũng", children: [] },
+                        { name: "Phạm Thị Khuyên", children: [] },
+                        { name: "Phạm Văn Hà", children: [] },
+                        { name: "Phạm Thị Hạnh", children: [] },
+                      ]
+                    },
+                  ]
+                },
+                {
+                  name: "Phạm Văn Rậu", children: [
+                    { name: "Phạm Văn Đoài", children: [] },
+                    { name: "Phạm Thị Tời", children: [] },
+                    { name: "Phạm Thị... (mất chữ).", children: [] },
+                  ]
+                },
+                {
+                  name: "Phạm Thị Hương", children: [
+                    { name: "Phạm Thị...", children: [] },
+                    { name: "Phạm Văn...", children: [] },
+                    { name: "Phạm Văn Mẫn", children: [] },
+                    { name: "Phạm Văn Tiệp", children: [] },
+                    { name: "Phạm Thị Cải", children: [] },
+                  ]
+                },
+                {
+                  name: "Phạm Văn Tuất", children: [
+                    { name: "Phạm Văn Triệu", children: [] },
+                    { name: "Phạm Văn Tập", children: [] },
+                    { name: "Phạm Văn Ứng", children: [] },
+                    { name: "Phạm Văn Sơn", children: [] },
+                    { name: "Phạm Thị Cúc", children: [] },
+                  ]
+                },
+                {
+                  name: "Phạm Thị Tửu", children: [
+                    { name: "Phạm Văn Tư", children: [] },
+                    { name: "Phạm Thị Thạc", children: [] },
+                    { name: "Phạm Văn Liên", children: [] },
+                    { name: " Phạm Thị Nhỏ.", children: [] },
+                  ]
+                },
+                {
+                  name: "Phạm Thị Tính", children: [
+                    { name: "Phạm Văn Thiết", children: [] },
+                    { name: "Phạm Thị Tình.", children: [] },
+                  ]
+                },
+                {
+                  name: "Phạm Thị Tình", children: [
+                    { name: "Phạm Thị Lan", children: [] },
+                    { name: "Phạm Văn Trường", children: [] },
+                    { name: "Phạm Thị Nguyệt", children: [] },
+                    { name: "Phạm Thị Nga", children: [] },
+                    { name: "Phạm Văn Hùng", children: [] },
+                    { name: "(Thị Hải).", children: [] },
+                  ]
+                },
+              ]
+            },
+            { name: "Phạm Văn Tại", children: [] },
+            { name: "Phạm Văn Mạo", children: [] }
+          ]
+        },
+        {
+          name: "Cụ Phạm Văn Đại",
+          children: [
+            { name: "Phạm Văn Hiển", children: [] },
+            { name: "Phạm Văn Soai", children: [] },
+            { name: "Phạm Văn Hợi", children: [] },
+            { name: "Phạm Thị Tầm", children: [] },
+          ]
+        },
+        {
+          name: "Cụ Phạm Thị Thìn",
+          children: [
+            {
+              name: "Phạm Văn Thuyết", children: [
+                { name: "Phạm Văn Lưu", children: [] },
+                { name: "Phạm Văn Thức", children: [] },
+                { name: "Phạm Văn Mô.", children: [] },
+              ]
+            },
+            { name: "Phạm Văn Luân", children: [] },
+            { name: "Phạm Văn Nghĩa", children: [] },
+            { name: "Phạm Thị Lan", children: [] },
+          ]
+        }
+      ]
+    };
+
+
+    /* =========================
+       2. RENDER TREE
+       ========================= */
+
+    function createNode(person) {
+      const wrapper = document.createElement("div");
+
+      const node = document.createElement("div");
+      node.className = "node";
+
+      const hasChildren = person.children && person.children.length > 0;
+
+      let toggle;
+
+      if (hasChildren) {
+        toggle = document.createElement("div");
+        toggle.className = "toggle";
+        toggle.textContent = "+";
+        node.appendChild(toggle);
+      } else {
+        const spacer = document.createElement("div");
+        spacer.style.width = "16px";
+        node.appendChild(spacer);
+      }
+
+      const name = document.createElement("span");
+      name.textContent = person.name;
+      node.appendChild(name);
+
+      wrapper.appendChild(node);
+
+      if (hasChildren) {
+        const childrenDiv = document.createElement("div");
+        childrenDiv.className = "children hidden";
+
+        person.children.forEach(child => {
+          childrenDiv.appendChild(createNode(child));
+        });
+
+        toggle.onclick = (e) => {
+          e.stopPropagation(); // prevent unwanted bubbling
+
+          const isHidden = childrenDiv.classList.toggle("hidden");
+          toggle.textContent = isHidden ? "+" : "–";
+
+          setTimeout(drawLines, 0);
+
+          requestAnimationFrame(() => {
+            drawLines();
+          }); // redraw after expand/collapse
+        };
+
+        wrapper.appendChild(childrenDiv);
+      }
+
+      return wrapper;
+    }
+
+    document.getElementById("tree").appendChild(createNode(familyTree));
+
+
+    /* =========================
+       3. DRAW SVG LINES
+       ========================= */
+
+    function drawLines() {
+      const svg = document.getElementById("lines");
+      svg.innerHTML = "";
+
+      const container = document.getElementById("tree-container");
+      const rect = container.getBoundingClientRect();
+
+      svg.setAttribute("width", rect.width);
+      svg.setAttribute("height", rect.height);
+
+      const nodes = document.querySelectorAll(".node");
+
+      nodes.forEach(node => {
+        const parent = node.parentElement;
+        const childrenDiv = parent.querySelector(":scope > .children");
+
+        if (childrenDiv && !childrenDiv.classList.contains("hidden")) {
+          const parentRect = node.getBoundingClientRect();
+
+          const px = parentRect.left + parentRect.width / 2 - rect.left;
+          const py = parentRect.bottom - rect.top;
+
+          const childNodes = [];
+
+          childrenDiv.childNodes.forEach(childWrapper => {
+            const childNode = childWrapper.querySelector(".node");
+            if (childNode) childNodes.push(childNode);
+          });
+
+          if (childNodes.length === 0) return;
+
+          const firstChildRect = childNodes[0].getBoundingClientRect();
+          const midY = (py + (firstChildRect.top - rect.top)) / 2;
+
+          // vertical down from parent
+          drawLine(px, py, px, midY);
+
+          // horizontal line across children
+          const xs = childNodes.map(c => {
+            const r = c.getBoundingClientRect();
+            return r.left + r.width / 2 - rect.left;
+          });
+
+          const leftX = Math.min(...xs);
+          const rightX = Math.max(...xs);
+
+          drawLine(leftX, midY, rightX, midY);
+
+          // vertical lines to each child
+          childNodes.forEach(childNode => {
+            const cr = childNode.getBoundingClientRect();
+
+            const cx = cr.left + cr.width / 2 - rect.left;
+            const cy = cr.top - rect.top;
+
+            drawLine(cx, midY, cx, cy);
+          });
+        }
+      });
+    }
+
+    function drawLine(x1, y1, x2, y2) {
+      const svg = document.getElementById("lines");
+
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+
+      svg.appendChild(line);
+    }
+
+
+    /* =========================
+       4. INIT
+       ========================= */
+
+    function init() {
+      document.getElementById("tree").appendChild(createNode(DATA));
+      requestAnimationFrame(() => {
+        drawLines();
+      });
+    }
+
+    window.onload = init;
+    window.onresize = drawLines;
+
+  </script>
+
+</body>
+
+</html>
