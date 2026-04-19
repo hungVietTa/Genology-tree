@@ -369,18 +369,22 @@
           childrenDiv.appendChild(createNode(child));
         });
 
-        toggle.onclick = (e) => {
-          e.stopPropagation(); // prevent unwanted bubbling
+        function handleToggle(e) {
+          e.stopPropagation();
 
           const isHidden = childrenDiv.classList.toggle("hidden");
           toggle.textContent = isHidden ? "+" : "–";
 
           setTimeout(drawLines, 0);
 
-          requestAnimationFrame(() => {
-            drawLines();
-          }); // redraw after expand/collapse
-        };
+          requestAnimationFrame(drawLines);
+        }
+
+        // click on icon
+        toggle.onclick = handleToggle;
+
+        // 👇 click on whole card
+        node.onclick = handleToggle;
 
         wrapper.appendChild(childrenDiv);
       }
